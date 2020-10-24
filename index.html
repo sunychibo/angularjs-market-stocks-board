@@ -20,7 +20,11 @@
     }
 
     .no-data td {
-      display: none;
+      visibility: hidden;
+    }
+
+    span {
+      color: white;
     }
   </style>
   <script src="./vendor/angular.min.js"></script>
@@ -32,15 +36,20 @@
 <body>
   <div class="stock-board container" ng-controller="StockBoardController">
     <button type="button" class="btn btn-success btn-block mt-2 mb-2" ng-click="fetchFreshData()">Refresh data</button>
+    <p>
+      <span class="no-data p-1">High risk to bankrupt</span> - 1.8 < Altman Z-Score > 3.0 - <span class="soclose p-1">Stable company</span>
+    </p>
     <table class="table table-dark" style="font-size: 12px">
       <thead>
         <tr>
           <th scope="col">#</th>
           <th scope="col">Ticker</th>
           <th scope="col">Company Name</th>
+          <th scope="col">Z-Score</th>
           <th scope="col">Price</th>
           <th scope="col">Dividends</th>
           <th scope="col">Debt/Equity</th>
+          <th scope="col">Cash/Debt</th>
           <th scope="col">Target</th>
           <th scope="col">Rest</th>
         </tr>
@@ -50,9 +59,11 @@
           <th scope="row" class="p-1">{{$index + 1}}</th>
           <th scope="row" class="p-1">{{stock.companyProfile.data.symbol}}</th>
           <td class="p-1">{{stock.companyProfile.data.profile.companyName}}</td>
+          <th scope="row" class="p-1" ng-class="{'no-data': (stock.zScore && stock.zScore <= 1.8), 'soclose': (stock.zScore && stock.zScore >= 3)}">{{stock.zScore}}</th>
           <td class="p-1">${{stock.companyProfile.data.profile.price}}</td>
           <td class="p-1">{{(+stock.financialRatios.data.ratios[0].investmentValuationRatios.dividendYield * 100).toFixed(2)}}%</td>
-          <td class="p-1">{{stock.financialRatios.data.ratios[0].debtRatios.debtEquityRatio}}</td>
+          <td class="p-1">{{(+stock.financialRatios.data.ratios[0].debtRatios.debtEquityRatio).toFixed(2)}}</td>
+          <td class="p-1">{{(+stock.financialRatios.data.ratios[0].debtRatios.cashFlowToDebtRatio).toFixed(2)}}</td>
           <td class="p-1">${{stock.priceTarget}}</td>
           <td class="p-1" ng-class="stock.cssClass">${{stock.targetRest}}</td>
         </tr>
